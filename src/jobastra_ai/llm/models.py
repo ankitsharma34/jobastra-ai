@@ -4,6 +4,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_mistralai import ChatMistralAI
 
 from jobastra_ai.llm.config import LLMSettings, get_llm_settings
+from jobastra_ai.llm.errors import LLMConfigurationError
 
 
 def create_chat_model(settings: LLMSettings) -> BaseChatModel:
@@ -19,7 +20,7 @@ def create_chat_model(settings: LLMSettings) -> BaseChatModel:
             timeout=settings.timeout,
         )
 
-    raise ValueError(f"Unsupported LLM provider: {settings.provider!r}")
+    raise LLMConfigurationError(f"Unsupported LLM provider: {settings.provider!r}")
 
 
 @lru_cache

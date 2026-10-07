@@ -2,9 +2,10 @@ from typing import TypeVar
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from jobastra_ai.llm.config import LLMSettings, get_llm_settings
+from jobastra_ai.llm.errors import LLMInvocationError, LLMOutputValidationError
 from jobastra_ai.llm.models import create_chat_model, get_chat_model
 from jobastra_ai.llm.schemas import LLMMessage, LLMRequest, LLMResponse
 
@@ -27,14 +28,24 @@ class LLMService:
     def invoke(self, request: LLMRequest) -> LLMResponse:
         """Invoke the configured model and return a JobAstra response."""
 
-        result = self._model.invoke(self._to_langchain_messages(request.messages))
-        return self._to_response(result)
+        try:
+            result = self._model.invoke(self._to_langchain_messages(request.messages))
+            return self._to_response(result)
+        except LLMInvocationError:
+            raise
+        except Exception as exc:
+            raise self._invocation_error() from exc
 
     async def ainvoke(self, request: LLMRequest) -> LLMResponse:
         """Asynchronously invoke the configured model."""
 
-        result = await self._model.ainvoke(self._to_langchain_messages(request.messages))
-        return self._to_response(result)
+        try:
+            result = await self._model.ainvoke(self._to_langchain_messages(request.messages))
+            return self._to_response(result)
+        except LLMInvocationError:
+            raise
+        except Exception as exc:
+            raise self._invocation_error() from exc
 
     def invoke_structured(
         self,
@@ -43,8 +54,13 @@ class LLMService:
     ) -> StructuredOutputT:
         """Invoke the model and validate its output against a Pydantic schema."""
 
-        structured_model = self._model.with_structured_output(output_schema)
-        result = structured_model.invoke(self._to_langchain_messages(request.messages))
+        try:
+            structured_model = self._model.with_structured_output(output_schema)
+            result = structured_model.invoke(self._to_langchain_messages(request.messages))
+        except ValidationError as exc:
+            raise self._output_validation_error() from exc
+        except Exception as exc:
+            raise self._invocation_error() from exc
         return self._validate_structured_output(result, output_schema)
 
     async def ainvoke_structured(
@@ -54,8 +70,13 @@ class LLMService:
     ) -> StructuredOutputT:
         """Asynchronously invoke the model and return validated structured output."""
 
-        structured_model = self._model.with_structured_output(output_schema)
-        result = await structured_model.ainvoke(self._to_langchain_messages(request.messages))
+        try:
+            structured_model = self._model.with_structured_output(output_schema)
+            result = await structured_model.ainvoke(self._to_langchain_messages(request.messages))
+        except ValidationError as exc:
+            raise self._output_validation_error() from exc
+        except Exception as exc:
+            raise self._invocation_error() from exc
         return self._validate_structured_output(result, output_schema)
 
     @staticmethod
@@ -81,4 +102,16 @@ class LLMService:
     ) -> StructuredOutputT:
         if isinstance(result, output_schema):
             return result
-        return output_schema.model_validate(result)
+        try:
+            return output_schema.model_validate(result)
+        except ValidationError as exc:
+            raise LLMService._output_validation_error() from exc
+
+    def _invocation_error(self) -> LLMInvocationError:
+        return LLMInvocationError(f"The {self._settings.provider} model invocation failed")
+
+    @staticmethod
+    def _output_validation_error() -> LLMOutputValidationError:
+        return LLMOutputValidationError(
+            "The model returned output that does not match the requested schema"
+        )

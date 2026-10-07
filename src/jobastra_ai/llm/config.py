@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,7 +11,8 @@ class LLMSettings(BaseSettings):
     model: str
     api_key: SecretStr
     temperature: float = 0.0
-    timeout: float = 30.0
+    timeout: float = Field(default=30.0, gt=0)
+    max_retries: int = Field(default=3, ge=0)
 
     model_config = SettingsConfigDict(
         env_file=".env",

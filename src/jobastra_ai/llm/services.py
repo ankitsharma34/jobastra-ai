@@ -1,11 +1,16 @@
-from typing import TypeVar
+from typing import NoReturn, TypeVar
 
+import httpx
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, ValidationError
 
 from jobastra_ai.llm.config import LLMSettings, get_llm_settings
-from jobastra_ai.llm.errors import LLMInvocationError, LLMOutputValidationError
+from jobastra_ai.llm.errors import (
+    LLMInvocationError,
+    LLMOutputValidationError,
+    LLMTimeoutError,
+)
 from jobastra_ai.llm.models import create_chat_model, get_chat_model
 from jobastra_ai.llm.schemas import LLMMessage, LLMRequest, LLMResponse
 
@@ -34,7 +39,7 @@ class LLMService:
         except LLMInvocationError:
             raise
         except Exception as exc:
-            raise self._invocation_error() from exc
+            self._raise_invocation_error(exc)
 
     async def ainvoke(self, request: LLMRequest) -> LLMResponse:
         """Asynchronously invoke the configured model."""
@@ -45,7 +50,7 @@ class LLMService:
         except LLMInvocationError:
             raise
         except Exception as exc:
-            raise self._invocation_error() from exc
+            self._raise_invocation_error(exc)
 
     def invoke_structured(
         self,
@@ -60,7 +65,7 @@ class LLMService:
         except ValidationError as exc:
             raise self._output_validation_error() from exc
         except Exception as exc:
-            raise self._invocation_error() from exc
+            self._raise_invocation_error(exc)
         return self._validate_structured_output(result, output_schema)
 
     async def ainvoke_structured(
@@ -76,7 +81,7 @@ class LLMService:
         except ValidationError as exc:
             raise self._output_validation_error() from exc
         except Exception as exc:
-            raise self._invocation_error() from exc
+            self._raise_invocation_error(exc)
         return self._validate_structured_output(result, output_schema)
 
     @staticmethod
@@ -109,6 +114,25 @@ class LLMService:
 
     def _invocation_error(self) -> LLMInvocationError:
         return LLMInvocationError(f"The {self._settings.provider} model invocation failed")
+
+    def _raise_invocation_error(self, exc: Exception) -> NoReturn:
+        if self._is_timeout_error(exc):
+            raise LLMTimeoutError(
+                f"The {self._settings.provider} model timed out after "
+                f"{self._settings.timeout:g} seconds"
+            ) from exc
+        raise self._invocation_error() from exc
+
+    @staticmethod
+    def _is_timeout_error(exc: Exception) -> bool:
+        current: BaseException | None = exc
+        visited: set[int] = set()
+        while current is not None and id(current) not in visited:
+            if isinstance(current, (TimeoutError, httpx.TimeoutException)):
+                return True
+            visited.add(id(current))
+            current = current.__cause__ or current.__context__
+        return False
 
     @staticmethod
     def _output_validation_error() -> LLMOutputValidationError:

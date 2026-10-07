@@ -10,5 +10,9 @@ class LLMInvocationError(LLMError):
     """Raised when a model invocation fails."""
 
 
+class LLMTimeoutError(LLMInvocationError):
+    """Raised when a model invocation exceeds its configured timeout."""
+
+
 class LLMOutputValidationError(LLMError):
     """Raised when model output does not match the requested schema."""

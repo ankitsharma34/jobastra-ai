@@ -18,6 +18,7 @@ def create_chat_model(settings: LLMSettings) -> BaseChatModel:
             api_key=settings.api_key,
             temperature=settings.temperature,
             timeout=settings.timeout,
+            max_retries=settings.max_retries,
         )
 
     raise LLMConfigurationError(f"Unsupported LLM provider: {settings.provider!r}")

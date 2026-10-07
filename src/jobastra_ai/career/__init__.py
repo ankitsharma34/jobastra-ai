@@ -6,6 +6,7 @@ from jobastra_ai.career.schemas import (
     CareerPreferences,
     CareerProfile,
     CareerProfileExtractionInput,
+    CareerProfileExtractionRequest,
     Certification,
     Education,
     EmploymentType,
@@ -13,12 +14,15 @@ from jobastra_ai.career.schemas import (
     SkillLevel,
     WorkExperience,
 )
+from jobastra_ai.career.service import CareerProfileService
 
 __all__ = [
     "CAREER_PROFILE_EXTRACTION_PROMPT",
     "CareerPreferences",
     "CareerProfile",
     "CareerProfileExtractionInput",
+    "CareerProfileExtractionRequest",
+    "CareerProfileService",
     "Certification",
     "Education",
     "EmploymentType",

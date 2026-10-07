@@ -79,11 +79,7 @@ class Certification(CareerSchema):
 
     @model_validator(mode="after")
     def validate_dates(self) -> Self:
-        if (
-            self.issued_date
-            and self.expiration_date
-            and self.expiration_date < self.issued_date
-        ):
+        if self.issued_date and self.expiration_date and self.expiration_date < self.issued_date:
             raise ValueError("Certification expiration date cannot precede issue date")
         return self
 
@@ -96,11 +92,14 @@ class CareerPreferences(CareerSchema):
     remote_preferred: bool | None = None
 
 
-class CareerProfileExtractionInput(CareerSchema):
+class CareerProfileExtractionRequest(CareerSchema):
     """Source content used to extract a structured career profile."""
 
     resume_text: str = Field(min_length=1)
     additional_context: str | None = None
+
+
+CareerProfileExtractionInput = CareerProfileExtractionRequest
 
 
 class CareerProfile(CareerSchema):

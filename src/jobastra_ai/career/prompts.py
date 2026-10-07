@@ -1,4 +1,4 @@
-from jobastra_ai.career.schemas import CareerProfileExtractionInput
+from jobastra_ai.career.schemas import CareerProfileExtractionRequest
 from jobastra_ai.llm.schemas import LLMRequest
 from jobastra_ai.prompts import PromptMessageTemplate, PromptTemplate
 
@@ -33,7 +33,7 @@ CAREER_PROFILE_EXTRACTION_PROMPT = PromptTemplate(
 
 
 def build_career_profile_extraction_request(
-    extraction_input: CareerProfileExtractionInput,
+    extraction_input: CareerProfileExtractionRequest,
 ) -> LLMRequest:
     """Render the career profile extraction prompt as an LLM request."""
 

@@ -1,6 +1,7 @@
 from jobastra_ai.career.schemas import (
     CareerPreferences,
     CareerProfile,
+    CareerProfileExtractionInput,
     Certification,
     Education,
     EmploymentType,
@@ -12,6 +13,7 @@ from jobastra_ai.career.schemas import (
 __all__ = [
     "CareerPreferences",
     "CareerProfile",
+    "CareerProfileExtractionInput",
     "Certification",
     "Education",
     "EmploymentType",

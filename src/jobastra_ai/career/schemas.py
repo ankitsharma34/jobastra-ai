@@ -96,6 +96,13 @@ class CareerPreferences(CareerSchema):
     remote_preferred: bool | None = None
 
 
+class CareerProfileExtractionInput(CareerSchema):
+    """Source content used to extract a structured career profile."""
+
+    resume_text: str = Field(min_length=1)
+    additional_context: str | None = None
+
+
 class CareerProfile(CareerSchema):
     full_name: str | None = None
     headline: str | None = None

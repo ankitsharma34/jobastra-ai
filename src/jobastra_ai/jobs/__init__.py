@@ -9,12 +9,14 @@ from jobastra_ai.jobs.schemas import (
     Seniority,
     WorkMode,
 )
+from jobastra_ai.jobs.service import JobDescriptionService
 
 __all__ = [
     "EmploymentType",
     "JOB_DESCRIPTION_EXTRACTION_PROMPT",
     "JobDescription",
     "JobDescriptionExtractionRequest",
+    "JobDescriptionService",
     "Seniority",
     "WorkMode",
     "build_job_description_extraction_request",

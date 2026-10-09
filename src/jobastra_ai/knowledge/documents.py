@@ -5,21 +5,22 @@ from langchain_core.documents import Document
 from jobastra_ai.career.schemas import CareerProfile
 
 
-def build_career_documents(profile: CareerProfile, user_id: str) -> list[Document]:
+def build_career_documents(
+    profile: CareerProfile,
+    user_id: str,
+    profile_id: str,
+) -> list[Document]:
     """Convert a career profile into independently retrievable documents."""
 
-    if not isinstance(user_id, str):
-        raise TypeError("user_id must be a string")
-    if not user_id.strip():
-        raise ValueError("user_id must not be empty")
-    user_id = user_id.strip()
+    user_id = _validate_identifier(user_id, "user_id")
+    profile_id = _validate_identifier(profile_id, "profile_id")
 
     documents: list[Document] = []
-    summary = _build_summary_document(profile, user_id)
+    summary = _build_summary_document(profile, user_id, profile_id)
     if summary is not None:
         documents.append(summary)
 
-    for index, experience in enumerate(profile.work_experience):
+    for index, experience in enumerate(profile.work_experience, start=1):
         lines = [
             f"Employment: {experience.title} at {experience.company}",
             _label("Employment type", experience.employment_type),
@@ -30,10 +31,16 @@ def build_career_documents(profile: CareerProfile, user_id: str) -> list[Documen
             _list_label("Skills", experience.skills),
         ]
         documents.append(
-            _document(lines, user_id, section="work_experience", index=index)
+            _document(
+                lines,
+                user_id,
+                profile_id,
+                source_type="work_experience",
+                source_id=f"work-experience-{index}",
+            )
         )
 
-    for index, project in enumerate(profile.projects):
+    for index, project in enumerate(profile.projects, start=1):
         lines = [
             f"Project: {project.name}",
             _label("Role", project.role),
@@ -43,9 +50,17 @@ def build_career_documents(profile: CareerProfile, user_id: str) -> list[Documen
             _list_label("Achievements", project.achievements),
             _label("URL", project.url),
         ]
-        documents.append(_document(lines, user_id, section="project", index=index))
+        documents.append(
+            _document(
+                lines,
+                user_id,
+                profile_id,
+                source_type="project",
+                source_id=f"project-{index}",
+            )
+        )
 
-    for index, education in enumerate(profile.education):
+    for index, education in enumerate(profile.education, start=1):
         qualification = " in ".join(
             part for part in (education.degree, education.field_of_study) if part
         )
@@ -55,9 +70,17 @@ def build_career_documents(profile: CareerProfile, user_id: str) -> list[Documen
             _date_range(education.start_date, education.end_date),
             _label("Description", education.description),
         ]
-        documents.append(_document(lines, user_id, section="education", index=index))
+        documents.append(
+            _document(
+                lines,
+                user_id,
+                profile_id,
+                source_type="education",
+                source_id=f"education-{index}",
+            )
+        )
 
-    for index, certification in enumerate(profile.certifications):
+    for index, certification in enumerate(profile.certifications, start=1):
         lines = [
             f"Certification: {certification.name}",
             _label("Issuer", certification.issuer),
@@ -66,12 +89,24 @@ def build_career_documents(profile: CareerProfile, user_id: str) -> list[Documen
             _label("Credential ID", certification.credential_id),
             _label("Credential URL", certification.credential_url),
         ]
-        documents.append(_document(lines, user_id, section="certification", index=index))
+        documents.append(
+            _document(
+                lines,
+                user_id,
+                profile_id,
+                source_type="certification",
+                source_id=f"certification-{index}",
+            )
+        )
 
     return documents
 
 
-def _build_summary_document(profile: CareerProfile, user_id: str) -> Document | None:
+def _build_summary_document(
+    profile: CareerProfile,
+    user_id: str,
+    profile_id: str,
+) -> Document | None:
     skill_lines = []
     for skill in profile.skills:
         details: list[str] = []
@@ -91,27 +126,42 @@ def _build_summary_document(profile: CareerProfile, user_id: str) -> Document | 
     ]
     if not any(lines):
         return None
-    return _document(lines, user_id, section="summary")
+    return _document(
+        lines,
+        user_id,
+        profile_id,
+        source_type="summary",
+        source_id="summary-1",
+    )
 
 
 def _document(
     lines: list[str | None],
     user_id: str,
+    profile_id: str,
     *,
-    section: str,
-    index: int | None = None,
+    source_type: str,
+    source_id: str,
 ) -> Document:
-    metadata: dict[str, str | int] = {
+    metadata = {
         "user_id": user_id,
-        "source": "career_profile",
-        "section": section,
+        "source_type": source_type,
+        "source_id": source_id,
+        "profile_id": profile_id,
     }
-    if index is not None:
-        metadata["index"] = index
     return Document(
+        id=f"{user_id}:{profile_id}:{source_id}",
         page_content="\n".join(line for line in lines if line),
         metadata=metadata,
     )
+
+
+def _validate_identifier(value: object, name: str) -> str:
+    if not isinstance(value, str):
+        raise TypeError(f"{name} must be a string")
+    if not value.strip():
+        raise ValueError(f"{name} must not be empty")
+    return value.strip()
 
 
 def _label(label: str, value: object | None) -> str | None:

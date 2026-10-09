@@ -11,10 +11,12 @@ dependencies = [
     "fastapi>=0.142.2",
     "httpx>=0.28.1",
     "langchain>=1.4.3",
+    "langchain-huggingface>=1.2.3",
     "langchain-mistralai>=1.1.6",
     "pydantic-settings>=2.15.0",
     "pypdf>=6.0.0",
     "python-multipart>=0.0.22",
+    "sentence-transformers>=6.1.0",
     "uvicorn>=0.54.0",
 ]
 

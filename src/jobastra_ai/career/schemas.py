@@ -84,6 +84,23 @@ class Certification(CareerSchema):
         return self
 
 
+class Project(CareerSchema):
+    name: str = Field(min_length=1)
+    description: str | None = None
+    role: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
+    technologies: list[str] = Field(default_factory=list)
+    achievements: list[str] = Field(default_factory=list)
+    url: HttpUrl | None = None
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> Self:
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValueError("Project end date cannot precede start date")
+        return self
+
+
 class CareerPreferences(CareerSchema):
     target_roles: list[str] = Field(default_factory=list)
     preferred_locations: list[str] = Field(default_factory=list)
@@ -110,6 +127,7 @@ class CareerProfile(CareerSchema):
     years_of_experience: float | None = Field(default=None, ge=0)
     skills: list[Skill] = Field(default_factory=list)
     work_experience: list[WorkExperience] = Field(default_factory=list)
+    projects: list[Project] = Field(default_factory=list)
     education: list[Education] = Field(default_factory=list)
     certifications: list[Certification] = Field(default_factory=list)
     preferences: CareerPreferences = Field(default_factory=CareerPreferences)

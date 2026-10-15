@@ -9,7 +9,14 @@ from jobastra_ai.matching.service import JobMatchingService
 router = APIRouter(prefix="/jobs", tags=["matching"])
 
 
-@router.post("/match", response_model=JobMatchResult)
+@router.post(
+    "/match",
+    response_model=JobMatchResult,
+    description=(
+        "For development, user_id is accepted in the request body. Before public deployment, "
+        "it must be resolved from trusted authentication."
+    ),
+)
 async def match_job(
     request: JobMatchRequest,
     service: Annotated[JobMatchingService, Depends(get_job_matching_service)],

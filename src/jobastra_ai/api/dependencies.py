@@ -28,12 +28,6 @@ def get_job_description_service(
     return JobDescriptionService(llm_service)
 
 
-def get_job_matching_service(
-    llm_service: Annotated[LLMService, Depends(get_llm_service)],
-) -> JobMatchingService:
-    return JobMatchingService(llm_service)
-
-
 def get_career_knowledge_service(
     vector_store: Annotated[CareerPGVector, Depends(get_vector_store)],
 ) -> CareerKnowledgeService:
@@ -44,6 +38,13 @@ def get_career_retriever(
     vector_store: Annotated[CareerPGVector, Depends(get_vector_store)],
 ) -> CareerRetriever:
     return CareerRetriever(vector_store)
+
+
+def get_job_matching_service(
+    llm_service: Annotated[LLMService, Depends(get_llm_service)],
+    retriever: Annotated[CareerRetriever, Depends(get_career_retriever)],
+) -> JobMatchingService:
+    return JobMatchingService(llm_service, retriever)
 
 
 def get_career_rag_service(

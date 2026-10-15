@@ -13,6 +13,7 @@ class MatchingSchema(BaseModel):
 
 
 class JobMatchRequest(MatchingSchema):
+    user_id: str = Field(min_length=1)
     career_profile: CareerProfile
     job_description: JobDescription
 

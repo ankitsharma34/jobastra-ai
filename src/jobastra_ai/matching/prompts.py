@@ -8,7 +8,7 @@ from jobastra_ai.rag.schemas import CareerEvidence
 
 JOB_MATCHING_PROMPT = PromptTemplate(
     name="matching.job_match",
-    version="2",
+    version="3",
     messages=(
         PromptMessageTemplate(
             role="system",
@@ -28,6 +28,10 @@ JOB_MATCHING_PROMPT = PromptTemplate(
                 "do not present missing evidence as proof that the candidate lacks the skill.\n"
                 "- Use gaps for unmet requirements and for important requirements that remain "
                 "unverified or uncertain; clearly label uncertainty in the gap description.\n"
+                "- For every matched skill or strength supported by retrieved career evidence, "
+                "add an evidence reference with the matching claim and relevant source IDs.\n"
+                "- Use only source IDs present in retrieved_career_evidence. Do not invent source "
+                "IDs or cite the structured profile as if it were a retrieved source.\n"
                 "- Assign a match score from 0 to 100 as a directional heuristic, not an "
                 "objective hiring probability or hiring decision.\n"
                 "- Produce a concise explanation supported by the supplied profile and job data.\n"

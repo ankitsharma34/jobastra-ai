@@ -18,6 +18,12 @@ class JobMatchRequest(MatchingSchema):
     job_description: JobDescription
 
 
+class JobMatchEvidenceReference(MatchingSchema):
+    category: Literal["matched_skill", "strength"]
+    claim: str = Field(min_length=1)
+    source_ids: list[str] = Field(min_length=1)
+
+
 class JobMatchResult(MatchingSchema):
     match_score: int = Field(ge=0, le=100)
     recommendation: Literal["strong_match", "potential_match", "weak_match"]
@@ -26,3 +32,4 @@ class JobMatchResult(MatchingSchema):
     strengths: list[str]
     gaps: list[str]
     reasoning: str = Field(min_length=1)
+    evidence_references: list[JobMatchEvidenceReference] = Field(default_factory=list)

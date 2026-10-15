@@ -8,6 +8,8 @@ from jobastra_ai.knowledge.service import CareerKnowledgeService
 from jobastra_ai.knowledge.store import CareerPGVector, get_vector_store
 from jobastra_ai.llm.services import LLMService
 from jobastra_ai.matching.service import JobMatchingService
+from jobastra_ai.rag.retriever import CareerRetriever
+from jobastra_ai.rag.service import CareerRAGService
 
 
 def get_llm_service() -> LLMService:
@@ -36,3 +38,16 @@ def get_career_knowledge_service(
     vector_store: Annotated[CareerPGVector, Depends(get_vector_store)],
 ) -> CareerKnowledgeService:
     return CareerKnowledgeService(vector_store)
+
+
+def get_career_retriever(
+    vector_store: Annotated[CareerPGVector, Depends(get_vector_store)],
+) -> CareerRetriever:
+    return CareerRetriever(vector_store)
+
+
+def get_career_rag_service(
+    retriever: Annotated[CareerRetriever, Depends(get_career_retriever)],
+    llm_service: Annotated[LLMService, Depends(get_llm_service)],
+) -> CareerRAGService:
+    return CareerRAGService(retriever, llm_service)

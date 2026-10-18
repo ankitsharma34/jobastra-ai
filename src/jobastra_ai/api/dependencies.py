@@ -1,7 +1,8 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, Request, status
 
+from jobastra_ai.applications.service import ApplicationAnswerService
 from jobastra_ai.career.service import CareerProfileService
 from jobastra_ai.jobs.service import JobDescriptionService
 from jobastra_ai.knowledge.service import CareerKnowledgeService
@@ -52,3 +53,22 @@ def get_career_rag_service(
     llm_service: Annotated[LLMService, Depends(get_llm_service)],
 ) -> CareerRAGService:
     return CareerRAGService(retriever, llm_service)
+
+
+def get_application_answer_service(
+    retriever: Annotated[CareerRetriever, Depends(get_career_retriever)],
+    llm_service: Annotated[LLMService, Depends(get_llm_service)],
+) -> ApplicationAnswerService:
+    return ApplicationAnswerService(retriever, llm_service)
+
+
+def get_authenticated_user_id(request: Request) -> str:
+    """Return the user identity populated by trusted authentication middleware."""
+
+    user_id = getattr(request.state, "user_id", None)
+    if not isinstance(user_id, str) or not user_id.strip():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication is required",
+        )
+    return user_id.strip()

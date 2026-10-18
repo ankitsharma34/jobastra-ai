@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from jobastra_ai.api.errors import register_exception_handlers
+from jobastra_ai.api.routes.applications import router as applications_router
 from jobastra_ai.api.routes.career import router as career_router
 from jobastra_ai.api.routes.health import router as health_router
 from jobastra_ai.api.routes.jobs import router as jobs_router
@@ -18,6 +19,7 @@ app = FastAPI(
 )
 
 register_exception_handlers(app)
+app.include_router(applications_router, prefix="/api")
 app.include_router(career_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
 app.include_router(jobs_router, prefix="/api")

@@ -8,7 +8,7 @@ from jobastra_ai.rag.schemas import CareerEvidence
 
 APPLICATION_ANSWER_PROMPT = PromptTemplate(
     name="applications.answer",
-    version="1",
+    version="2",
     messages=(
         PromptMessageTemplate(
             role="system",
@@ -30,6 +30,9 @@ APPLICATION_ANSWER_PROMPT = PromptTemplate(
                 "list the specific missing facts in missing_information.\n"
                 "- If a truthful answer cannot be produced without those facts, return null for "
                 "answer rather than fabricating content.\n"
+                "- Never answer declarations about work authorization, legal eligibility, visa "
+                "or sponsorship status, criminal or background history, or similar sensitive "
+                "facts unless they are explicitly supported by verified career evidence.\n"
                 "- Otherwise, set needs_user_input to false and return an empty "
                 "missing_information list.\n"
                 "- Return only the requested structured schema."

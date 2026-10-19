@@ -1,0 +1,19 @@
+{
+  "full_name": null,
+  "headline": null,
+  "summary": null,
+  "location": null,
+  "years_of_experience": null,
+  "skills": [],
+  "work_experience": [],
+  "projects": [],
+  "education": [],
+  "certifications": [],
+  "preferences": {
+    "target_roles": [],
+    "preferred_locations": [],
+    "preferred_employment_types": [],
+    "industries": [],
+    "remote_preferred": null
+  }
+}

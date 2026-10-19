@@ -11,6 +11,7 @@ from jobastra_ai.tools.jobs import (
     create_job_description_analysis_tool,
 )
 from jobastra_ai.tools.matching import JobMatchingInput, create_job_matching_tool
+from jobastra_ai.tools.registry import create_agent_tools
 
 __all__ = [
     "ApplicationAnswerGenerationInput",
@@ -19,6 +20,7 @@ __all__ = [
     "JobMatchingInput",
     "create_career_evidence_tool",
     "create_application_answer_tool",
+    "create_agent_tools",
     "create_job_description_analysis_tool",
     "create_job_matching_tool",
 ]

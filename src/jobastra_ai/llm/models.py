@@ -1,7 +1,9 @@
 from functools import lru_cache
+from math import ceil
 
 from langchain_core.language_models import BaseChatModel
 from langchain_mistralai import ChatMistralAI
+from langchain_openrouter import ChatOpenRouter
 
 from jobastra_ai.llm.config import LLMSettings, get_llm_settings
 from jobastra_ai.llm.errors import LLMConfigurationError
@@ -18,6 +20,15 @@ def create_chat_model(settings: LLMSettings) -> BaseChatModel:
             api_key=settings.api_key,
             temperature=settings.temperature,
             timeout=settings.timeout,
+            max_retries=settings.max_retries,
+        )
+
+    if provider == "openrouter":
+        return ChatOpenRouter(
+            model=settings.model,
+            api_key=settings.api_key,
+            temperature=settings.temperature,
+            timeout=ceil(settings.timeout),
             max_retries=settings.max_retries,
         )
 

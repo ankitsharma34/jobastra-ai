@@ -26,4 +26,12 @@ Structured profiles are excellent for validation but poor retrieval units. `know
 
 Deletion and insertion are not transactional: a failure after deletion can leave no profile. Ordinal IDs shift when list order changes, although full replacement avoids duplicates. Empty profiles delete old entries and add none. There is no versioning, migration strategy, batch queue, database-level tenant policy, encryption policy, or operational index tuning.
 
-**Why documents instead of embedding one profile JSON?** Smaller semantic units improve precision and attribution. **Why metadata filtering?** Similarity alone has no tenant concept; user metadata narrows the candidate set. Application authorization must still ensure the caller is allowed to use that user ID.
+**Why documents instead of embedding one profile JSON?**
+
+Smaller semantic units improve precision and attribution.
+
+**Why metadata filtering?**
+
+Similarity alone has no tenant concept; user metadata narrows the candidate set. Application authorization must still ensure the caller is allowed to use that user ID.
+
+For backend replacement and data-migration instructions, see [Changing the vector store](24-changing-vector-store.md).

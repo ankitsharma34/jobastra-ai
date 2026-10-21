@@ -1,6 +1,6 @@
 # JobAstra AI — AI-Powered Career Agent
 
-JobAstra AI is the Python AI service for the broader [JobAstra platform](https://github.com/ankitsharma34/JobAstra). It turns resumes and job postings into validated data, builds a user-scoped career knowledge base, retrieves evidence with semantic search, evaluates job fit, drafts grounded application answers, and exposes the same capabilities as LangChain tools to a local single agent.
+JobAstra AI is the Python AI service for the broader [JobAstra](https://github.com/ankitsharma34/JobAstra) platform. It turns resumes and job postings into validated data, builds a user-scoped career knowledge base, retrieves evidence with semantic search, evaluates job fit, drafts grounded application answers, and exposes the same capabilities as LangChain tools to a local single agent.
 
 The repository is an active development MVP. Authentication, production observability, comprehensive tests, and failure-safe indexing remain incomplete.
 
@@ -37,7 +37,7 @@ flowchart LR
 ## Technology stack
 
 | Area | Technology |
-|---|---|
+| --- | --- |
 | API and validation | Python 3.12+, FastAPI, Pydantic v2, pydantic-settings |
 | LLM orchestration | LangChain and configurable chat providers |
 | Retrieval | Local embedding models and PGVector |
@@ -102,7 +102,7 @@ src/jobastra_ai/
 ## API overview
 
 | Method | Route | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | GET | `/api/health` | Liveness response |
 | POST | `/api/career/profile/extract` | Extract a profile from a PDF |
 | POST | `/api/jobs/extract` | Extract a job description |
@@ -120,6 +120,8 @@ Start at the [documentation index](docs/README.md). Key guides cover [architectu
 To change chat models or integrate another LLM provider, follow [Adding models and providers](docs/22-adding-models-and-providers.md).
 
 To replace the local embedding model safely, follow [Changing the embedding model](docs/23-changing-embedding-model.md).
+
+To migrate career vectors to another storage backend, follow [Changing the vector store](docs/24-changing-vector-store.md).
 
 ## Roadmap
 

@@ -27,3 +27,4 @@ These guides describe the repository as implemented. Future sections are proposa
 | [Roadmap](21-future-roadmap.md) | Planned work |
 | [Adding models and providers](22-adding-models-and-providers.md) | Extend the LLM model factory safely |
 | [Changing the embedding model](23-changing-embedding-model.md) | Select, validate, and migrate embedding models |
+| [Changing the vector store](24-changing-vector-store.md) | Replace or migrate the vector-storage backend |
